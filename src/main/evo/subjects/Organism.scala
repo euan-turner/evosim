@@ -1,0 +1,115 @@
+package evo.subject
+
+import breeze.linalg.DenseVector
+import evo.subjects.{Edible, Objective}
+import breeze.linalg.norm
+import collection.mutable.ListBuffer
+
+// TODO: Do these need to be Double?
+case class OrganismGenes(
+  size: Double, 
+  speed: Double, 
+  perception: Double, 
+  reach: Double, 
+  lifespan: Int)
+
+/* 
+TODO: Rethink this iteratively, and as abstract class with template methods
+1. Organism moves randomly, tracks history, until out of energy
+  Needs energy, templates for energy consumption
+  All organisms need a speed and to track their energy
+2. Organism moves toward a destination
+3. Organism moves toward food
+  Needs perception and reach
+4. Reproduction/aging
+  Needs to mutate and replicate
+5. All states, active, alive, dead, asleep etc.
+ */
+/* 
+  Role of an organism within the simulation:
+    1. Simulation creates organisms at the start
+    2. Simulation tracks population of organisms over generations
+    3. In a generation, an organism is placed on the boundary of the arena
+    4. During a generation, an organism moves towards objectives
+    5. At the end of a generation, an organism ages, evolves, and/or dies
+ */
+/**
+ * An abstract definition of an Organism
+ * Provides the template with which specific organisms
+ * can be implemented.
+ * Hooks for Organisms to implement:
+ *   energy_cost: Customise energy expenditure to internal characteristics
+ *   apply_energy_cost: Affect energy changes to characteristics
+ *   mutate: Create a child with mutated characteristics
+ *   age: Replicate current instance, may adjust characteristics deterministically
+ * All organisms must have:
+ *   current position
+ *   history of positions
+ *   current energy
+ *   speed
+ *   size (radius)
+ *   perception
+ *   reach
+ *   lifespan (# generations)
+ *  
+ */
+
+abstract class Organism(
+  private var currentPosition: DenseVector[Double],
+  private var speed: Double,
+  private var size: Double,
+  private var perception: Double,
+  private var reach: Double,
+  private var lifespan: Int,
+  private var energy: Double
+):
+  private val positionHistory = ListBuffer.empty[DenseVector[Double]]
+  private val foodEaten = ListBuffer.empty[Edible]
+  private var objective: Option[Objective] = None
+
+  def getPosition: DenseVector[Double] = currentPosition
+  def setPosition(pos: DenseVector[Double]): Unit =
+    currentPosition = pos
+  def getSpeed: Double = speed 
+  def getSize: Double = size 
+  def getPerception: Double = perception
+  def getReach: Double = reach 
+  def getLifespan: Int = lifespan
+  def getGenes: OrganismGenes = OrganismGenes(
+    size, speed, perception, reach, lifespan
+  )
+
+  def isAlive: Boolean = ???
+  def isActive: Boolean = ???
+
+  // Hooks for movement
+  def calcEnergyCost(distance: Double): Double = ???
+  // Adjust characteristics and state
+  def applyEnergyCost(energy: Double): Double = ???
+
+  def moveTo(pos: DenseVector[Double]): Unit = 
+    val dist = norm(pos - currentPosition)
+    val energyCost = calcEnergyCost(dist)
+    positionHistory += pos 
+    currentPosition = pos
+    applyEnergyCost(energyCost)
+
+  def getObjective: Option[Objective] = objective
+  def setObjective(newObjective: Objective): Unit = 
+    objective = Some(newObjective)
+  def clearObjective: Unit =
+    objective = None
+
+  def canSee(point: DenseVector[Double]): Boolean =
+    norm(point - currentPosition) <= perception
+  def canReach(point: DenseVector[Double]): Boolean =
+    norm(point - currentPosition) <= reach
+  
+  def eat(food: Edible): Unit =
+    foodEaten += food 
+    applyEnergyCost(food.energy)
+  def getEnergyLeft: Double = energy
+
+
+
+  
