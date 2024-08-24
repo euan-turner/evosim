@@ -1,3 +1,3 @@
 package evo.util 
 
-class ImmutableGenesError(message: String) extends Exception
+class MutateError(message: String) extends Exception

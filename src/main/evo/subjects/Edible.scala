@@ -1,5 +1,7 @@
 package evo.subjects 
 
+import breeze.linalg.DenseVector
+
 /**
   * Describes anything that an Organism may eat
   * Provides energy to its consumer
@@ -8,4 +10,5 @@ package evo.subjects
   *   Prey Organism
   */
 trait Edible extends Objective:
-  def energy: Double
+  def getEnergy: Double
+  def setPosition(pos: DenseVector[Double]): Unit

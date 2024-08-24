@@ -24,6 +24,7 @@ class Blob(
   // energy: Double
   ) extends Organism(
     currentPosition,
+    name
     // Blob.speed,
     // Blob.size,
     // Blob.perception,
@@ -33,7 +34,6 @@ class Blob(
   ):
     override def moveTo(pos: DenseVector[Double]): Unit = 
       super.moveTo(pos)
-      println(s"${name}: ${super.getPositionHistory.length}") 
     // private var active = true
     // override def isAlive: Boolean = energy > 0
     // def deactivate(): Unit = 

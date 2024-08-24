@@ -49,6 +49,7 @@ TODO: Rethink this iteratively, and as abstract class with template methods
 
 abstract class Organism(
   private var currentPosition: DenseVector[Double],
+  private val name: String
   // private var speed: Double,
   // private var size: Double,
   // private var perception: Double,
@@ -58,13 +59,14 @@ abstract class Organism(
 ):
   private val positionHistory = ListBuffer.empty[DenseVector[Double]]
   // private val foodEaten = ListBuffer.empty[Edible]
-  // private var objective: Option[Objective] = None
+  private var objective: Option[Objective] = None
 
   def getPosition: DenseVector[Double] = currentPosition
   def setPosition(pos: DenseVector[Double]): Unit =
     currentPosition = pos
   def getPositionHistory: List[DenseVector[Double]] = positionHistory.toList
   def clearPositionHistory(): Unit = positionHistory.clear()
+  def getName: String = name
   // def getSpeed: Double = speed 
   // def getSize: Double = size 
   // def getPerception: Double = perception
@@ -73,6 +75,7 @@ abstract class Organism(
   // def getGenes: OrganismGenes = OrganismGenes(
   //   size, speed, perception, reach, lifespan
   // )
+
 
   // def isAlive: Boolean = energy > 0
   // def isActive: Boolean = ???
@@ -91,11 +94,11 @@ abstract class Organism(
     currentPosition = pos
     // applyEnergyCost(energyCost)
 
-  // def getObjective: Option[Objective] = objective
-  // def setObjective(newObjective: Objective): Unit = 
-  //   objective = Some(newObjective)
-  // def clearObjective: Unit =
-  //   objective = None
+  def getObjective: Option[Objective] = objective
+  def setObjective(newObjective: Objective): Unit = 
+    objective = Some(newObjective)
+  def clearObjective: Unit =
+    objective = None
 
   // def canSee(point: DenseVector[Double]): Boolean =
   //   norm(point - currentPosition) <= perception

@@ -2,11 +2,15 @@ package evo.subjects
 
 import breeze.linalg.DenseVector
 
-class Food(val position: DenseVector[Double], val energy: Int) extends Edible:
+class Food(private var position: DenseVector[Double], private val energy: Double) extends Edible:
 
-  override def get_position: DenseVector[Double] = position
 
-  override def get_energy: Int = energy
+  override def setPosition(pos: DenseVector[Double]): Unit = 
+    position = pos
+
+  override def getPosition: DenseVector[Double] = position
+
+  override def getEnergy: Double = energy
 
 
   

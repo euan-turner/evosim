@@ -9,4 +9,4 @@ import breeze.linalg.DenseVector
   *   Edge of map (for end of generation)
   */
 trait Objective:
-  def get_position: DenseVector[Double] 
+  def getPosition: DenseVector[Double] 
