@@ -4,6 +4,7 @@ import breeze.linalg.DenseVector
 import evo.subjects.{Edible, Objective}
 import breeze.linalg.norm
 import collection.mutable.ListBuffer
+import evo.util.ObjectiveError
 
 // TODO: Do these need to be Double?
 case class OrganismGenes(
@@ -58,8 +59,8 @@ abstract class Organism(
   // private var energy: Double
 ):
   private val positionHistory = ListBuffer.empty[DenseVector[Double]]
-  // private val foodEaten = ListBuffer.empty[Edible]
   private var objective: Option[Objective] = None
+  private val foodEaten = ListBuffer.empty[Edible]
 
   def getPosition: DenseVector[Double] = currentPosition
   def setPosition(pos: DenseVector[Double]): Unit =
@@ -67,10 +68,38 @@ abstract class Organism(
   def getPositionHistory: List[DenseVector[Double]] = positionHistory.toList
   def clearPositionHistory(): Unit = positionHistory.clear()
   def getName: String = name
+
+  def getFoodEaten: List[Edible] = foodEaten.toList
   // def getSpeed: Double = speed 
   // def getSize: Double = size 
   // def getPerception: Double = perception
   // def getReach: Double = reach 
+
+  // def applyEnergyCost(cost: Double): Double = ???
+
+  def moveTo(pos: DenseVector[Double]): Unit = 
+    // val dist = norm(pos - currentPosition)
+    // val energyCost = calcEnergyCost(dist)
+    positionHistory += pos 
+    currentPosition = pos
+    // applyEnergyCost(energyCost)
+
+  def getObjective: Option[Objective] = objective
+  def getObjectivePosition: DenseVector[Double] = 
+    objective match
+      case None => throw ObjectiveError("Organism does not have objective in getObjectivePosition")
+      case Some(obj) => obj.getPosition
+    
+  def setObjective(newObjective: Objective): Unit = 
+    objective = Some(newObjective)
+  def clearObjective(): Unit =
+    objective = None
+  
+  def eat(food: Edible): Unit = 
+    food.eat()
+    foodEaten += food
+
+  
   // def getLifespan: Int = lifespan
   // def getGenes: OrganismGenes = OrganismGenes(
   //   size, speed, perception, reach, lifespan
@@ -85,20 +114,6 @@ abstract class Organism(
   // // Hooks for movement
   // def calcEnergyCost(distance: Double): Double = ???
   // // Adjust characteristics and state
-  // def applyEnergyCost(cost: Double): Double = ???
-
-  def moveTo(pos: DenseVector[Double]): Unit = 
-    // val dist = norm(pos - currentPosition)
-    // val energyCost = calcEnergyCost(dist)
-    positionHistory += pos 
-    currentPosition = pos
-    // applyEnergyCost(energyCost)
-
-  def getObjective: Option[Objective] = objective
-  def setObjective(newObjective: Objective): Unit = 
-    objective = Some(newObjective)
-  def clearObjective: Unit =
-    objective = None
 
   // def canSee(point: DenseVector[Double]): Boolean =
   //   norm(point - currentPosition) <= perception
