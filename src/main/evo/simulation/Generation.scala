@@ -15,7 +15,7 @@ class Generation(
   private val bbox: Bbox,
   private val foods: ListBuffer[Edible]
   ):
-  private var steps: Int = 20
+  private var steps: Int = 40
   private var random = Random()
 
   private def genAlive: Boolean = steps > 0
@@ -110,8 +110,12 @@ class Generation(
         case pos: Position =>
           if norm(pos.getPosition - organism.getPosition) <= 0.001 then 
             organism.clearObjective()
-    // TODO: Die if out of energy
-    
+    // If out of energy, die
+    // TODO: Should this be before or after checking objective>
+    if !organism.isAlive then 
+      // TODO: Dead prey organisms can't be objectives
+      println(f"${organism.getName} is dead")
+      return
 
   private def moveOrganism(organism: Organism): Unit = 
     preMove(organism)
@@ -119,7 +123,7 @@ class Generation(
     postMove(organism)
 
   private def step(): Unit =
-    population.foreach(moveOrganism)
+    population.filter(o => o.isActive).foreach(moveOrganism)
     population = Random.shuffle(population)
     steps -= 1
 

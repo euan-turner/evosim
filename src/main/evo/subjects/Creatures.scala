@@ -20,28 +20,25 @@ import breeze.linalg.norm
   */
 class Blob(
   currentPosition: DenseVector[Double], 
-  name: String
-  // energy: Double
+  name: String,
+  energy: Double
   ) extends Organism(
     currentPosition,
-    name
+    name,
     // Blob.speed,
     // Blob.size,
     // Blob.perception,
     // Blob.reach,
     // Blob.lifespan,
-    // energy
+    energy
   ):
-    override def moveTo(pos: DenseVector[Double]): Unit = 
-      super.moveTo(pos)
-    // private var active = true
-    // override def isAlive: Boolean = energy > 0
-    // def deactivate(): Unit = 
-    //   active = false
-    // override def isActive: Boolean = active
+    override def calcEnergyCost(distance: Double): Double = 
+      distance
+    
+    override def isAlive: Boolean = getEnergyLeft > 0
+
+    // TODO: Change to include FINISHED state
+    override def isActive: Boolean = isAlive
+
     // override def mutate(seed: Int): Organism = age
     // override def age: Organism = this
-    // override def calcEnergyCost(distance: Double): Double = distance / 10
-    // override def applyEnergyCost(cost: Double): Double = 
-    //   energy = energy - cost
-    //   if energy < 0

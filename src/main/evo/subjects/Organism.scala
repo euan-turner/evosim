@@ -15,18 +15,6 @@ case class OrganismGenes(
   lifespan: Int)
 
 /* 
-TODO: Rethink this iteratively, and as abstract class with template methods
-1. Organism moves randomly, tracks history, until out of energy
-  Needs energy, templates for energy consumption
-  All organisms need a speed and to track their energy
-2. Organism moves toward a destination
-3. Organism moves toward food
-  Needs perception and reach
-4. Reproduction/aging
-  Needs to mutate and replicate
-5. All states, active, alive, dead, asleep etc.
- */
-/* 
   Role of an organism within the simulation:
     1. Simulation creates organisms at the start
     2. Simulation tracks population of organisms over generations
@@ -44,19 +32,22 @@ TODO: Rethink this iteratively, and as abstract class with template methods
  * 
  * Hooks to implement:
  *
- *   isAlive, isActive, calcEnergyCost, applyEnergyCost, mutate, age
+ *   isAlive, isActive, calcEnergyCost, mutate, age
  * 
+ * Hooks can utilise genes:
+ *   speed, size, perception, reach, lifespan
+ * to customise behaviour of a species
  */
 
 abstract class Organism(
   private var currentPosition: DenseVector[Double],
-  private val name: String
+  private val name: String,
   // private var speed: Double,
   // private var size: Double,
   // private var perception: Double,
   // private var reach: Double,
   // private var lifespan: Int,
-  // private var energy: Double
+  private var energy: Double
 ):
   private val positionHistory = ListBuffer.empty[DenseVector[Double]]
   private var objective: Option[Objective] = None
@@ -75,14 +66,17 @@ abstract class Organism(
   // def getPerception: Double = perception
   // def getReach: Double = reach 
 
-  // def applyEnergyCost(cost: Double): Double = ???
+  def updateEnergy(cost: Double): Unit = 
+    println(f"${getName} updating energy ${energy} by ${cost}")
+    energy += cost
 
   def moveTo(pos: DenseVector[Double]): Unit = 
-    // val dist = norm(pos - currentPosition)
-    // val energyCost = calcEnergyCost(dist)
+    val dist = norm(pos - currentPosition)
+    println(f"${getName} is moving ${dist}")
+    val energyCost = calcEnergyCost(dist)
     positionHistory += pos 
     currentPosition = pos
-    // applyEnergyCost(energyCost)
+    updateEnergy(-energyCost)
 
   def getObjective: Option[Objective] = objective
   def getObjectivePosition: DenseVector[Double] = 
@@ -96,8 +90,10 @@ abstract class Organism(
     objective = None
   
   def eat(food: Edible): Unit = 
+    println(f"${getName} is eating")
     food.eat()
     foodEaten += food
+    updateEnergy(food.getEnergy)
 
   
   // def getLifespan: Int = lifespan
@@ -106,24 +102,22 @@ abstract class Organism(
   // )
 
 
-  // def isAlive: Boolean = energy > 0
-  // def isActive: Boolean = ???
+  def isAlive: Boolean
+  def isActive: Boolean
   // def mutate(seed: Int): Organism = ???
   // def age: Organism = ???
 
-  // // Hooks for movement
-  // def calcEnergyCost(distance: Double): Double = ???
+  // Hooks for movement
+  def calcEnergyCost(distance: Double): Double
+
   // // Adjust characteristics and state
 
   // def canSee(point: DenseVector[Double]): Boolean =
   //   norm(point - currentPosition) <= perception
   // def canReach(point: DenseVector[Double]): Boolean =
   //   norm(point - currentPosition) <= reach
-  
-  // def eat(food: Edible): Unit =
-  //   foodEaten += food 
-  //   applyEnergyCost(food.getEnergy)
-  // def getEnergyLeft: Double = energy
+
+  def getEnergyLeft: Double = energy
 
 
 

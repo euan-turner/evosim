@@ -12,12 +12,12 @@ class Simulation():
 
   def run(): Unit = 
     var population: List[Organism] = (1 to populationSize)
-      .map(i => Blob(DenseVector(0, 0), f"Blob-${i}"))
+      .map(i => Blob(DenseVector(0, 0), f"Blob-${i}", 20))
       .toList
     for i <- 1 to generations do
       println(f"Generation ${i}")
       val food = (1 to 8).map(i => Food(DenseVector(0,0), 5)) // TODO: A food/organism's position is Optional 
-      val gen = Generation(population, Bbox(0, 0, 50, 50), food.to(ListBuffer))
+      val gen = Generation(population, Bbox(0, 0, 100, 100), food.to(ListBuffer))
       population = gen.run()
       gen.printStats
       population.foreach(o => o.clearPositionHistory())
